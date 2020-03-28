@@ -1,0 +1,64 @@
+postfix_Stack=Stack()
+        # YOUR CODE STARTS HERE
+        #This code sets up the structure for processing the string
+        operator = ["+-*/^"]
+        final_string = ""
+        #This code removes whitespace
+        txt = " ".join(txt.split())
+
+        #This code converts any ** exponents to ^
+        for i in range(len(txt)-1):
+            if txt[i] is "*" and txt[i+1] is "*":
+                txt[i]="^"
+
+        #This code checks paranthases
+        test_count = 0
+        for i in range(len(txt)):
+            if txt[i] is "(":
+                test_count+= 1
+            elif txt[i] is ")":
+                test_count -= 1
+            if test_count < 0:
+                return None
+        if test_count is not 0:
+            return None
+        #This decides operator importance
+        def pemdas(c):
+            result = 0
+            for i in range(len(operator)):
+                result += 1
+                if i is c:
+                    if c in "-/":
+                        result -= 1
+                    break
+            return result
+        #begin sorting the string
+        for i in range(len(txt)):
+            if txt[i].isdigit() is True:
+                final_string += " " + str(float(txt[i]))
+            elif txt[i] is "(":
+                postfix_Stack.push(txt[i])
+            elif txt[i] is ")":
+                popped = postfix_Stack.pop()
+                while popped is not "(":
+                    final_string += popped
+                    popped = postfix_Stack.pop()
+            elif pemdas(txt[i]):
+                while True:
+                    top = postfix_Stack.pop()
+                    if postfix_Stack.isEmpty() or postfix_Stack.peek():
+                        postfix_Stack.push(txt[i])
+                        break
+                    else:
+                        a = pemdas(txt[i])
+                        b = pemdas(postfix_Stack.peek())
+                        if a > b:
+                            postfix_Stack.push(txt[i])
+                            break
+                        else:
+                            final_string += postfix_Stack.pop()
+        while not postfix_Stack.isEmpty():
+            pop = postfix_Stack.pop()
+            final_string += pop
+        final_string = " ".join(final_string.split())
+        return  final_string
